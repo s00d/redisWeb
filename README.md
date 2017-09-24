@@ -2,7 +2,7 @@ Redis-WEB
 =========
 
 Redis-web is a simple web interface in [Laravel](https://github.com/laravel/laravel)
-and [Vue](https://github.com/vuejs/vue) to manage [Redis](http://redis.io/)databases.
+and [Vue](https://github.com/vuejs/vue) to manage [Redis](http://redis.io/) databases.
 
 It is released under the
 [Creative Commons Attribution 3.0 license](http://creativecommons.org/licenses/by/3.0/).

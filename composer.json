@@ -1,8 +1,18 @@
 {
-    "name": "laravel/laravel",
-    "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
-    "license": "MIT",
+    "name": "s00d/redis-web",
+    "description": "Redis-web is a simple web interface in Laravel and Vue to manage Redis databases.",
+    "keywords": ["redis", "web", "gui", "vue", "laravel"],
+    "version": "0.1.0",
+    "license": "CC-BY-ND",
+    "homepage": "https://github.com/s00d/redisWeb",
+    "authors": [
+        {
+            "name": "Pavel Kuzmin",
+            "email": "Virus191288@gmail.com",
+            "homepage": "http://braidy.ru",
+            "role": "Developer"
+        }
+    ],
     "type": "project",
     "require": {
         "php": ">=7.0.0",
