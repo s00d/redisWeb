@@ -26,7 +26,7 @@ Preview
 Installing/Configuring
 ======================
 
-To install [phpRedisAdmin](https://packagist.org/packages/s00d/redis-web) through [composer](http://getcomposer.org/) you need to execute the following commands:
+To install [redis-web](https://packagist.org/packages/s00d/redis-web) through [composer](http://getcomposer.org/) you need to execute the following commands:
 
 ```
 php composer.phar create-project -s dev s00d/redis-web path/to/install
