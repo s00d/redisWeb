@@ -1,0 +1,12 @@
+{
+  "name": "laravel-queue-server",
+  "script": "artisan",
+  "args": ["queue:work", "--tries=1", "--sleep=1", "--timeout=120"],
+  "exec_interpreter": "php",
+  "exec_mode": "fork",
+  "max_memory_restart" : "1G",
+  "watch": true,
+  "merge_logs": true,
+//  "cwd": "/Users/pavel/Sites/on",
+  "out_file": "/dev/null"
+}

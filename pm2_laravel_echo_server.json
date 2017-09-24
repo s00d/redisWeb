@@ -1,0 +1,11 @@
+{
+    "name": "echo",
+    "script": "laravel-echo-server",
+    "args": "start",
+    "max_memory_restart" : "1G",
+    "instances" : 1,
+    "watch": true,
+    "merge_logs": true,
+    //  "cwd": "/Users/pavel/Sites/on",
+    "out_file": "/dev/null"
+}
