@@ -59,6 +59,9 @@
             edit() {
                 return this.$route.query.edit || false
             },
+            db() {
+                return this.$route.query.db || false
+            },
             title_table() {
                 if(this.type === "hash") return 'Hash key:';
                 if(this.type === "list") return 'Index:';
@@ -90,7 +93,8 @@
                     new_key: this.new_key,
                     old_key: this.old_key,
                     u_key: this.u_key,
-                    type: this.type
+                    type: this.type,
+                    db: this.db
                 }).then(response => {
                     this.$router.push({
                         name: 'index',
