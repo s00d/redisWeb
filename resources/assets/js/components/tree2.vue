@@ -81,13 +81,12 @@
                 })
             },
             remove(link) {
-                this.$store.commit('tree/del', this.tree.link)
-//                this.$axios.delete("/removeItem",{ params: this.$mp_axios({ key: link, type: this.isFolder ? 'tree' : 'string'}) })
-//                    .then(response => {
-////                        this.$delete(this.$parent.tree.children, this.id)
-//                        this.$store.commit('tree/del', this.tree.link)
-//                    })
-//                    .catch(e => console.log(e))
+                this.$axios.delete("/removeItem",{ params: this.$mp_axios({ key: link, type: this.isFolder ? 'tree' : 'string'}) })
+                    .then(response => {
+//                        this.$delete(this.$parent.tree.children, this.id)
+                        this.$store.commit('tree/del', this.tree.link)
+                    })
+                    .catch(e => console.log(e))
             },
 
 
