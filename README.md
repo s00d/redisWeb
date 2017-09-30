@@ -69,3 +69,24 @@ Add to settings
   "root" => '$2y$10$ZDEIUCQ7BSDLP3d2MI4HIOI4.CcaYqRj8ICCyJT2isOBd5JLM7zYe'
 ]
 ```
+
+Queues!
+=======
+Show all queues from redis:
+
+<p align="center">
+  <img width="300" height="150" src="https://image.prntscr.com/image/9yn9HktGRL_SznmjyWqn9w.png"><br>
+  </p>
+
+
+
+Install latest PM2 stable version is installable via NPM:
+```
+npm install pm2@latest -g
+```
+
+Run
+
+```
+npm run socket:start
+```

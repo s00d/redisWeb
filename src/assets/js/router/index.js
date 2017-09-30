@@ -3,7 +3,7 @@ import Router from 'vue-router'
 
 Vue.use(Router)
 
-import editor from '../pages/index.vue';
+import index from '../pages/index.vue';
 import queues from '../pages/queues.vue';
 
 export default new Router({
@@ -15,8 +15,7 @@ export default new Router({
     //   name: 'landing-page',
     //   component: require('@/components/LandingPage').default
     // },
-      { path: '/', name: 'index', component: editor },
-      { path: '/', name: 'editor', component: editor },
+      { path: '/', name: 'index', component: index },
       { path: '/queues', name: 'queues', component: queues },
       { path: '*', redirect: '/' }
   ]

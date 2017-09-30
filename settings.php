@@ -40,8 +40,8 @@ return [
         "show_all_item"=> env("SHOWALLITEM", false),
 
         "redis"=> [
-        "default"=> [
-            "scheme"=> "tcp",
+            "default"=> [
+                "scheme"=> "tcp",
                 "host"=> "127.0.0.1",
                 "password"=> null,
                 "port"=> 6379,
@@ -54,5 +54,6 @@ return [
                 "database"=> 15
             ]
         ],
+
     ]
 ];

@@ -22,12 +22,42 @@
     import notifications2 from 'components/notifications2.vue'
 
     export default {
-        socket: {
-            chanels:{
-                'channel.queues.add': function (e) {
-                    this.queues.push({channel: e.channel, message: e.message});
+        socket:{
+            events:{
+                connect(){
+                    console.log('socket connect...')
+                },
+                connected(val){
+                    console.log('socket connected...', val);
+                    this.timestamp = val;
+                    this.socketConnected = false;
+                    this.$socket.emit('registe', JSON.stringify({redisKey: document.querySelector('#redis-key').getAttribute('value')}));
+                },
+                reconnecting(val){
+                    console.log('socket reconnecting...', val);
+                },
+                reconnect(val){
+                    console.log('socket reconnect...', val);
+                },
+                error(val) {
+                    console.log('error', val)
+                },
+                connect_error(val) {
+                    console.log('connect_error', val)
+                },
+                connect_timeout(val) {
+                    console.log('connect_timeout', val)
+                },
+                disconnect() {
+                    this.socketConnected = false;
+                    console.log('socket disconnect...')
+                },
+                message(val){
+                    console.log('msg...', val)
+                    if(val.event === 'queue') this.queues.push({channel: val.channel, message: val.message});
                 }
             }
+
         },
         data () {
             return {
@@ -43,13 +73,10 @@
 
         },
         methods: {
-            getData() {
-
-            },
 
         },
         mounted() {
-            this.getData();
+
         },
         components: {
             'header-component': Header,

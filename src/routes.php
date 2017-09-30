@@ -5,14 +5,18 @@ use Slim\Http\Response;
 use App\DataController;
 
 
-$app->get('/', function (Request $request, Response $response, array $args) {
-    $config = $this->config;
-    $this->logger->info("Slim-Skeleton '/' route");
+$homePage = function(Request $request, Response $response, array $args) {
+    $this->logger->info("Slim-Skeleton '/queues' route");
+    $redis = new \Predis\Client($this->config->get('redis.default'));
 
     return $this->view->render($response, 'index', [
-        'name' => $config->get('name'),
+        'name' => $this->config->get('name'),
+        'redis_key' => $redis->get('redis-key')
     ]);
-});
+};
+
+$app->get('/', $homePage);
+$app->get('/queues', $homePage);
 
 $app->group('/api', function () {
     $controller = new DataController($this->getContainer()->get('config'));

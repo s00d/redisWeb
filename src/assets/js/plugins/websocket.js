@@ -1,49 +1,61 @@
-// import Echo from 'laravel-echo'
-//
-// // io = require('socket.io-client');
-//
-// export function install (Vue) {
-//     Vue.prototype.$Echo = new Echo({
-//         broadcaster: 'socket.io',
-//         key: '7865a610c264d00a35a17b03ca95b343',
-//         // host: window.location.hostname + ':6001'
-//         host: 'localhost:6001',
-//         namespace: ''
-//     });
-//
-//     let addListeners = function() {
-//         let self = this;
-//         if (this.$options["socket"]) {
-//             let conf = this.$options.socket;
-//             if (conf.chanels) {
-//                 let prefix = conf.prefix || "";
-//                 Object.keys(conf.chanels).forEach((chanel_str) => {
-//                     let [type, chanel, listensten] = chanel_str.split(".");
-//                     let func = conf.chanels[chanel_str].bind(self);
-//                     this.$Echo[type](prefix + chanel).listen(listen, func);
-//                     conf.chanels[chanel_str].__binded = func;
-//                 });
-//             }
-//         }
-//     };
-//
-//     let removeListeners = function() {
-//         if (this.$options["socket"]) {
-//             let conf = this.$options.socket;
-//
-//             if (conf.chanels) {
-//                 let prefix = conf.prefix || "";
-//                 Object.keys(conf.chanels).forEach((chanel_str) => {
-//                     let [chanel, listen] = chanel_str.split(".")
-//                     this.$Echo.leave(prefix + chanel);
-//                 });
-//             }
-//         }
-//     };
-//
-//     Vue.mixin({
-//         beforeCreate: addListeners,
-//         beforeDestroy: removeListeners
-//     });
-//
-// }
+import IO from "socket.io-client";
+
+let connection = ':2635';
+
+let params = {
+    reconnection: true,
+    reconnectionDelay: 10000,
+    reconnectionDelayMax: 20000,
+    timeout: 1000
+};
+
+export function install (Vue) {
+    // if (connection != null && typeof connection === "object") socket = connection;
+    Vue.prototype.$socket = null;
+
+
+    let addListeners = function() {
+        if (this.$options["socket"]) {
+            if(Vue.prototype.$socket !== null) return false;
+            Vue.prototype.$socket = IO(connection || "", params);
+
+            let conf = this.$options.socket;
+            if (conf.namespace) {
+                this.$socket = IO(conf.namespace, conf.options);
+            }
+
+            if (conf.events) {
+                let prefix = conf.prefix || "";
+                Object.keys(conf.events).forEach((key) => {
+                    let func = conf.events[key].bind(this);
+                    this.$socket.on(prefix + key, func);
+                    conf.events[key].__binded = func;
+                });
+            }
+        }
+    };
+
+    let removeListeners = function() {
+        if (this.$options["socket"]) {
+            let conf = this.$options.socket;
+
+            if (conf.namespace) {
+                this.$socket.disconnect();
+            }
+
+            if (conf.events) {
+                let prefix = conf.prefix || "";
+                Object.keys(conf.events).forEach((key) => {
+                    this.$socket.off(prefix + key, conf.events[key].__binded);
+                });
+                Vue.prototype.$socket = null
+            }
+        }
+    };
+
+    Vue.mixin({
+        beforeCreate: addListeners,
+        beforeDestroy: removeListeners
+    });
+
+}

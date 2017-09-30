@@ -9,6 +9,7 @@
     <link href="{{ mix('/css/app.css') }}" rel="stylesheet">
     <script src="{{ mix('/js/manifest.js') }}"></script>
     <script src="{{ mix('/js/vendor.js') }}"></script>
+    <meta name="redis-key" id="redis-key" content="{{ $redis_key }}" value="{{ $redis_key }}"/>
 
     <link href="/public/assets/nprogress.css" rel="stylesheet" type="text/css">
     <link href="/public/assets/vanillatoasts.css" rel="stylesheet" type="text/css">
