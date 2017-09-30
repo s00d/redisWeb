@@ -1,7 +1,7 @@
 Redis-WEB
 =========
 
-Redis-web is a simple web interface in [Laravel](https://github.com/laravel/laravel)
+Redis-web is a simple web interface in [Slim](https://github.com/slimphp/Slim)
 and [Vue](https://github.com/vuejs/vue) to manage [Redis](http://redis.io/) databases.
 
 It is released under the
@@ -48,4 +48,19 @@ composer install && composer update
 npm i
 npm prod
 ```
+
+
+
+Settings
+========
+all setting in file ``./Settings.php``
+
+Passwords:
+
+Cleartext passwords are only good for quick testing. You probably want to use hashed passwords. Hashed password can be generated with htpasswd command line tool or password_hash() PHP function
+```
+$ htpasswd -nbBC 10 root password
+root:$2y$10$ZDEIUCQ7BSDLP3d2MI4HIOI4.CcaYqRj8ICCyJT2isOBd5JLM7zYe
+```
+
 

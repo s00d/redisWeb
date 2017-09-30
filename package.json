@@ -8,13 +8,10 @@
         "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
         "prod": "npm run production",
         "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
-
         "echo": "laravel-echo-server start",
-
         "laravel:echo": "pm2 delete pm2_laravel_echo_server.json && pm2 start pm2_laravel_echo_server.json",
         "laravel:queue": "pm2 delete lpm2_aravel_queue_server.json && pm2 start pm2_laravel_queue_server.json",
         "laravel:socket": "pm2 delete pm2_laravel_listen_server.json && pm2 start pm2_laravel_listen_server.json",
-
         "laravel:all": "laravel:echo && laravel:queue && laravel:socket"
     },
     "devDependencies": {
@@ -44,6 +41,7 @@
         "laravel-echo": "^1.3.2",
         "pusher-js": "^4.1.0",
         "socket.io": "^2.0.3",
-        "socket.io-client": "^2.0.3"
+        "socket.io-client": "^2.0.3",
+        "underscore": "^1.8.3"
     }
 }

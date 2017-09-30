@@ -1,10 +1,11 @@
 {
     "name": "s00d/redis-web",
     "description": "Redis-web is a simple web interface in Laravel and Vue to manage Redis databases.",
-    "keywords": ["redis", "web", "gui", "vue", "laravel"],
-    "version": "0.1.0",
-    "license": "CC-BY-ND",
+    "keywords": ["redis", "web", "gui", "vue", "slim"],
     "homepage": "https://github.com/s00d/redisWeb",
+    "license": "MIT",
+    "version": "0.2.0",
+    "type": "project",
     "authors": [
         {
             "name": "Pavel Kuzmin",
@@ -13,64 +14,48 @@
             "role": "Developer"
         }
     ],
-    "type": "project",
     "require": {
-        "php": ">=7.0.0",
-        "barryvdh/laravel-ide-helper": "^2.4",
-        "doctrine/dbal": "^2.6",
-        "fideloper/proxy": "~3.3",
-        "laravel/framework": "5.5.*",
-        "laravel/tinker": "~1.0",
+        "php": ">=5.5.0",
+        "slim/slim": "^3.1",
         "predis/predis": "^1.1",
-        "pusher/pusher-php-server": "~3.0"
+        "slim/php-view": "^2.0",
+        "monolog/monolog": "^1.17",
+        "symfony/var-dumper": "^3.1",
+        "davidepastore/slim-config": "^0.1.1",
+        "superbalist/php-pubsub": "^2.0",
+        "superbalist/php-pubsub-redis": "^2.0",
+        "tuupola/slim-basic-auth": "^2.3",
+        "hassankhan/config": "^0.10.0",
+        "slim/http-cache": "^0.4.0",
+        "rubellum/slim-blade-view": "^0.1.1",
+        "zeuxisoo/slim-whoops": "0.6.*",
+        "bairwell/middleware-cors": "^0.3.7"
     },
     "require-dev": {
-        "filp/whoops": "~2.0",
-        "fzaninotto/faker": "~1.4",
-        "mockery/mockery": "0.9.*",
-        "phpunit/phpunit": "~6.0"
-    },
-    "autoload": {
-        "classmap": [
-            "database/seeds",
-            "database/factories"
-        ],
-        "psr-4": {
-            "App\\": "app/"
-        }
+        "phpunit/phpunit": ">=4.8 < 6.0"
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests/"
-        }
-    },
-    "extra": {
-        "laravel": {
-            "dont-discover": [
-            ]
-        }
-    },
-    "scripts": {
-        "post-root-package-install": [
-            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
-        ],
-        "post-create-project-cmd": [
-            "@php artisan key:generate"
-        ],
-        "post-autoload-dump": [
-            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover"
-        ],
-        "post-update-cmd": [
-            "Illuminate\\Foundation\\ComposerScripts::postUpdate",
-            "php artisan ide-helper:generate",
-            "php artisan ide-helper:meta",
-            "php artisan optimize"
+            "Tests\\": "tests/",
+            "App\\": "src/"
+        },
+        "files": [
+            "helpers/dd.php",
+            "helpers/env.php",
+            "helpers/mix.php"
         ]
     },
     "config": {
-        "preferred-install": "dist",
+        "process-timeout" : 0,
         "sort-packages": true,
         "optimize-autoloader": true
+    },
+    "scripts": {
+        "start": "php -S localhost:8080 -t public public/index.php",
+        "test": "phpunit",
+        "post-update-cmd": [
+            "php artisan optimize"
+        ]
     }
+
 }
