@@ -1,6 +1,8 @@
 <template>
     <div class="starter-template">
-        <h1>Redis-web v0.2.0</h1>
+        <h1>Redis-web v<span v-text="data.overview.server_version"></span></h1>
+        <h4 v-text="data.overview.server_description" style="color: #aeaeae"></h4>
+        <hr>
 
         <b>local server</b>
 

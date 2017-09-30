@@ -174,10 +174,13 @@ class DataController
             $this->redis->resetStat();
         }
         $info = $this->redis->info();
+        $packages = json_decode(file_get_contents('../composer.json'));
 
         return $this->response->withJSON([
             'info' => $info,
             'overview' => [
+                'server_version' => $packages->version,
+                'server_description' => $packages->description,
                 'redis_version' => $info["Server"]['redis_version'],
                 'uptime_in_seconds' => $info["Server"]['uptime_in_seconds'],
                 'used_memory' => $info["Memory"]['used_memory'],
