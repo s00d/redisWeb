@@ -13,7 +13,7 @@
                 </div>
                 <div class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
-                        <li><router-link :to="{ name: 'editor', query: {} }">Editor</router-link></li>
+                        <!--<li><router-link :to="{ name: 'editor', query: {} }">Editor</router-link></li>-->
                         <!--<li><router-link :to="{ name: 'queues', query: {} }">Queues</router-link></li>-->
                         <li><router-link :to="{ name: 'index',  query: {} }">About</router-link></li>
 
@@ -21,7 +21,7 @@
                         <li><a target="_blank" :href="'/api/export?db=' + db">Export</a></li>
                         <li><a target="_blank" :href="'/api/export?db=' + db +'&type=json'">Export JSON</a></li>
 
-                        <li><a href="#" @click="show_modal = !show_modal">Settings</a></li>
+                        <!--<li><a href="#" @click="show_modal = !show_modal">Settings</a></li>-->
                         <li>
                             <a href="#"
                                @click="$store.commit('settings/set', {save: !save})"
@@ -112,5 +112,9 @@
     .info {
         color: #aaa;
         font-weight: normal;
+    }
+
+    .active {
+        color: white !important;
     }
 </style>

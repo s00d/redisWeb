@@ -194,7 +194,7 @@ class DataController
     /**
      * @return mixed
      */
-    public function setTTL() {
+    private function setTTL() {
         if ($this->request->getAttribute('reset', -1 ) == -1) $this->redis->persist($this->key);
         else $this->redis->expire($this->key, $this->request->getAttribute('ttl'));
 
@@ -206,7 +206,7 @@ class DataController
     /**
      * @return mixed
      */
-    public function setName() {
+    private function setName() {
         if (strlen($this->request->getAttribute('new_name')) > $this->config->get('maxkeylen')) {
             return $this->response->withJSON([
                 'result' => 'ERROR: Your key is to long (max length is '.$this->config->get('maxkeyle').')'
@@ -222,7 +222,7 @@ class DataController
     /**
      * @return mixed
      */
-    public function removeItem() {
+    private function removeItem() {
         if ($this->request->getAttribute('type', false) === 'string') {
             // Delete the whole key.
             $this->redis->del($this->key);
@@ -253,7 +253,7 @@ class DataController
     /**
      * @return mixed
      */
-    public function export() {
+    private function export() {
         $keys = $this->redis->keys($this->key);
 
         $type = $this->request->getAttribute('type', 'redis');
@@ -273,7 +273,7 @@ class DataController
     /**
      * @return mixed
      */
-    public function saveItem() {
+    private function saveItem() {
         if (strlen($this->request->getAttribute('new_key')) > $this->config->get('maxkeylen')) {
             return $this->response->withJSON([
                 'result' => 'ERROR: Your hash key is to long (max length is '.$this->config->get('maxkeylen').')'
@@ -320,7 +320,7 @@ class DataController
     /**
      * @return mixed
      */
-    public function import() {
+    private function import() {
         // Append some spaces at the end to make sure we always have enough arguments for the last function.
         $commands = str_getcsv(str_replace(["\r", "\n"], ['', ' '], $this->request->getAttribute('import_text') ).'    ', ' ');
 

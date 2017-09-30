@@ -1,26 +1,32 @@
 <template>
     <div>
         <div style="width: 100%" class="text-center">
-            <div class="input-group input-group-sm">
-                <span class="input-group-addon">DB: </span>
-                <select class="form-control input-sm" v-model="db">
-                    <option v-for="key in 12" v-text="key-1"></option>
-                </select>
+            <div class="row">
+                <div class="col-sm-12 col-md-6" style="padding-right: 1px">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon black">Server: </span>
+                        <select class="form-control input-sm black" v-model="server">
+                            <option v-for="(server, name) in params.servers" v-text="name +': '+server" :value="name"></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-6" style="padding-left: 1px">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon black">DB: </span>
+                        <select class="form-control input-sm black" v-model="db">
+                            <option v-for="key in 12" v-text="key-1"></option>
+                        </select>
+                    </div>
+                </div>
             </div>
 
-            <div class="input-group input-group-sm">
-                <span class="input-group-addon">Server: </span>
-                <select class="form-control input-sm" v-model="server">
-                    <option v-for="(server, name) in params.servers" v-text="name +': '+server" :value="name"></option>
-                </select>
-            </div>
 
             <hr>
             <div class="input-group input-group-sm">
-                <input type="text" class="form-control" placeholder="Filter" v-model="filter">
+                <input type="text" class="form-control black" placeholder="Filter" v-model="filter">
                 <span class="form-control-clear glyphicon glyphicon-remove form-control-feedback" v-if="filter !== '' && filter !== '*'" @click="filter = '*'"></span>
                 <span class="input-group-btn">
-                    <router-link :to="{ name: 'index', query: $mp({filter: filter}) }" class="btn btn-default">
+                    <router-link :to="{ name: 'index', query: $mp({filter: filter}) }" class="btn btn-default black">
                         <i class="glyphicon glyphicon-search"></i>
                     </router-link>
                 </span>
@@ -33,9 +39,9 @@
                     <!--<button class="btn btn-default" type="button">+</button>-->
                 <!--</span>-->
             <!--</div>-->
-            <router-link :to="{ name: 'index', query: $mp({edit: true}) }" class="btn btn-link">+ Add another key</router-link>
+            <router-link :to="{ name: 'index', query: $mp({edit: true}) }" class="btn btn-link black">+ Add another key</router-link>
         </div>
-        <ul class="list-group tree">
+        <ul class="list-group tree no-padding">
             <tree v-for="(data, key) in treeFiltred.children"
                   :tree="data"
                   :id="key"
@@ -129,10 +135,10 @@
     }
 
     li.tree_item div {
-        -moz-border-radius: 5px;
-        -webkit-border-radius: 5px;
-        border: 1px solid #999;
-        border-radius: 5px;
+        /*-moz-border-radius: 5px;*/
+        /*-webkit-border-radius: 5px;*/
+        border: 1px solid white;
+        /*border-radius: 5px;*/
         padding: 3px 8px;
         text-decoration: none;
         cursor: pointer;
@@ -148,11 +154,11 @@
     }
 
     li.tree_item div:hover, li.add_tree div:hover {
-        background-color: #d8dfe5;
+        background-color: #021321;
     }
 
     li.tree_item div.selected, li.add_tree div.selected {
-        background-color: #d8dfe5;
+        background-color: #546879;
     }
 
     .form-control-clear {

@@ -1,7 +1,5 @@
 <template>
     <div id="app" class="layout-boxed">
-
-
         <transition mode="out-in">
             <keep-alive>
                 <router-view class="view"></router-view>
@@ -43,5 +41,9 @@
 
     .container {
         margin-left: 10px;
+    }
+
+    .no-padding {
+        padding: 0 !important;
     }
 </style>

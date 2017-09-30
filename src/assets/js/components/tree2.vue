@@ -7,7 +7,7 @@
                 <span v-text="tree.name"></span>
             </span>
 
-            <a class="btn pull-right btn-xs glyphicon glyphicon-remove" :style="{color: isFolder ? '#3097D1' : 'red'}" @click.stop="remove(tree.link)"></a>
+            <a class="btn pull-right btn-xs glyphicon glyphicon-remove" :class="isFolder ? 'remove-folder' : 'remove-item'" @click.stop="remove(tree.link)"></a>
             <span class="label label-default pull-right mr-fix" v-text="length" v-if="isFolder"></span>
         </div>
         <ul v-if="isFolder && tree.open" class="tree">
@@ -133,6 +133,18 @@
 
 <style scoped>
     .mr-fix{
-        margin-top: 5px;
+        margin-top: 3px;
+        background-color: transparent;
+        border: 1px solid white;
+    }
+
+    .remove-folder {
+        color: #3097D1;
+    }
+    .remove-item {
+        color: red;
+    }
+    .remove-folder:hover, .remove-item:hover {
+        color:white;
     }
 </style>
