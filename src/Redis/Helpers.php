@@ -63,7 +63,7 @@ class Helpers extends Base
 
             case 'list':
                 $size = $this->redis->lLen($_GET['key']);
-                $count = $this->config->get('count_per_page');
+                $count = $this->config->get('count_per_page_list');
                 $values = $this->redis->lrange($key, $page * $count, $page * $count + $count);
                 foreach ($values as $k => $value) {
                     $values[$k] = $value;

@@ -13,6 +13,12 @@ require __DIR__ . '/../vendor/autoload.php';
 
 session_start();
 
+try {
+    \Helpers\Dotenv::load(__DIR__. "/../");
+} catch (InvalidArgumentException $e) {
+    //
+}
+
 Predis\Autoloader::register();
 
 // Instantiate the app

@@ -39,8 +39,6 @@ git clone https://github.com/s00d/redisWeb.git
 cd redisWeb
 ```
 
-Copy .env.example to .env and edit it with your specific configuration.
-
 Install and run:
 
 ```
@@ -53,9 +51,11 @@ npm prod
 
 Settings
 ========
+Copy ``.env.example`` to ``.env`` and edit it with your specific configuration.
+
 all setting in file ``./Settings.php``
 
-Passwords:
+#### Passwords:
 
 Cleartext passwords are only good for quick testing. You probably want to use hashed passwords. Hashed password can be generated with htpasswd command line tool or password_hash() PHP function
 ```
@@ -63,4 +63,9 @@ $ htpasswd -nbBC 10 root password
 root:$2y$10$ZDEIUCQ7BSDLP3d2MI4HIOI4.CcaYqRj8ICCyJT2isOBd5JLM7zYe
 ```
 
-
+Add to settings
+```
+"users" => [
+  "root" => '$2y$10$ZDEIUCQ7BSDLP3d2MI4HIOI4.CcaYqRj8ICCyJT2isOBd5JLM7zYe'
+]
+```

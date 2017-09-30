@@ -161,8 +161,8 @@ class DataController
             'size' => $size,
             'key' => $this->key,
 //            'count' => count($values),
-            'max_count' => $this->config->get('count_per_page'),
-            'pages' => ceil($size / $this->config->get('count_per_page'))
+            'max_count' => $this->config->get('count_per_page_list'),
+            'pages' => ceil($size / $this->config->get('count_per_page_list'))
         ], 200, JSON_UNESCAPED_UNICODE);
     }
 
