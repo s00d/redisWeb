@@ -2,7 +2,7 @@
     <div>
         <header-component @reload="getData()"></header-component>
         <div class="container">
-            <div class="col-sm-4 col-md-3 sidebar">
+            <div class="col-sm-4 col-md-3 sidebar black">
                 <menu-component :params="params"></menu-component>
             </div>
             <div class="col-sm-8 col-sm-offset-4 col-md-9 col-md-offset-4 main">
@@ -87,8 +87,5 @@
 
 <style>
 
-    .black {
-        background-color: #2a3f53;
-        color: white;
-    }
+
 </style>

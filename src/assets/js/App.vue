@@ -46,4 +46,9 @@
     .no-padding {
         padding: 0 !important;
     }
+
+    .black {
+        background-color: #2a3f53;
+        color: white;
+    }
 </style>

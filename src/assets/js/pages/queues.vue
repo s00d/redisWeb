@@ -12,32 +12,24 @@
             <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-3 main">
                 <div>
                     <ul class="nav nav-tabs">
-                        <li :class="{active: select === 'info'}"><a @click="select = 'queues'">Queues</a></li>
-                        <li :class="{active: select === 'monitor'}"><a @click="select = 'monitor'">Monitor</a></li>
+                        <li :class="{'active': select === 'info'}"><a @click="channels = {}; select = 'info'">Queues</a></li>
+                        <li :class="{'active': select === 'monitor'}"><a @click="channels = {}; select = 'monitor'">Monitor</a></li>
                     </ul>
                 </div>
 
-                <ul class="messages" v-if="select === 'queues' && select_channel">
-                    <li class="message" v-for="(value,key) in channels[select_channel]">
-                        <span v-text="value"></span>
-                    </li>
-                </ul>
-                <ul class="messages" v-if="select === 'monitor'">
-                    <li class="message" v-for="(data,key) in monitor">
-                        <span v-text="data.time"></span>
-                        (<span v-text="data.source"></span> <span v-text="data.database"></span>):
-                        <span v-text="data.args"></span>
+                <ul class="messages" v-if="select_channel">
+                    <li class="message" v-for="(data,key) in channels[select_channel]">
+                        <span v-text="data" v-if="select === 'info'"></span>
+
+                        <span v-if="select === 'monitor'">
+                            <span v-text="data.time"></span>
+                            (<span v-text="data.source"></span> <span v-text="data.database"></span>):
+                            <span v-text="data.args"></span>
+                        </span>
                     </li>
                 </ul>
             </div>
 
-            <!--<div class="col-sm-12 col-md-12 main">-->
-                <!--<ul class="messages">-->
-                    <!--<li class="message" v-for="(value,key) in queues">-->
-                        <!--<span v-text="value.channel"></span>: <span v-text="value.message"></span>-->
-                    <!--</li>-->
-                <!--</ul>-->
-            <!--</div>-->
             <div id="vanillatoasts-container" >
                 <notifications2></notifications2>
             </div>
@@ -81,22 +73,29 @@
                 },
                 message(val){
                     console.log('msg...', val)
-                    if(val.event === 'queue') {
+                    if(val.event === 'queue'  && this.select === 'info') {
                         if(!(val.channel in this.channels)) Vue.set(this.channels, val.channel, [val.message])
                         else this.channels[val.channel].push(val.message);
                     }
-                    if(val.event === 'monitor') this.monitor.push(val.data)
+                    if(val.event === 'monitor' && this.select === 'monitor') {
+                        let date = new Date();
+                        date.setTime(val.data.time*1000);
+                        let channel = date.getHours() + ":" + date.getMinutes();
+
+                        if(!(channel in this.channels)) Vue.set(this.channels, channel, [val.data])
+                        else this.channels[channel].push(val.data);
+
+//                        this.monitor.push(val.data)
+                    }
                 }
             }
 
         },
         data () {
             return {
-                queues: [],
-                monitor: [],
                 channels: {},
                 select_channel: false,
-                select: 'queues',
+                select: 'info',
             }
         },
         computed: {
