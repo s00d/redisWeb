@@ -13,10 +13,8 @@
         "laravel:queue": "pm2 delete lpm2_aravel_queue_server.json && pm2 start pm2_laravel_queue_server.json",
         "laravel:socket": "pm2 delete pm2_laravel_listen_server.json && pm2 start pm2_laravel_listen_server.json",
         "laravel:all": "laravel:echo && laravel:queue && laravel:socket",
-
         "socket:dev-server": "cross-env NODE_ENV=development nodemon ./src/socket.server.js",
         "socket:start": "pm2 delete websocket-server && pm2 start ./src/socket.server.js --name='websocket-server'"
-
     },
     "devDependencies": {
         "axios": "^0.16.2",
@@ -42,6 +40,8 @@
         "vuex": "^2.4.0"
     },
     "dependencies": {
+        "async": "^2.5.0",
+        "ioredis": "^3.1.4",
         "laravel-echo": "^1.3.2",
         "pusher-js": "^4.1.0",
         "redis": "^2.8.0",

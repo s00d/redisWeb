@@ -63,11 +63,30 @@ class DataController
     /**
      * @return mixed
      */
+    private function runAction() {
+        $command = $this->request->getParam('command', null);
+        if(isset($command)) {
+            $command = escapeshellcmd($command);
+            $server = $this->request->getParam('server', 'default');
+            $host = $this->request->getParam("server.{$server},host", '127.0.0.1');
+            $port = $this->request->getParam("server.{$server},port", '6379');
+            exec("redis-cli -h {$host} -p {$port} {$command}", $result);
+
+            return $this->response->withJSON([
+                'result' => $result
+            ], 200, JSON_UNESCAPED_UNICODE);
+        }
+
+    }
+
+    /**
+     * @return mixed
+     */
     private function getList() {
-        $next = $this->request->getParam('next', 0);
-        $all = $this->request->getParam('all', $this->config->get('show_all_item', false));
-        $count = $this->request->getParam('count', 10000);
-        $filter =  $this->request->getParam('filter', $this->request->getParam('filter', $this->config->get(('filter'))));
+        $next = $this->request->getAttribute('next', 0);
+        $all = $this->request->getAttribute('all', $this->config->get('show_all_item', false));
+        $count = $this->request->getAttribute('count', 10000);
+        $filter =  $this->request->getAttribute('filter', $this->request->getAttribute('filter', $this->config->get(('filter'))));
         $redis_data = [];
         while (true) {
             list($next, $keys) = $this->redis->scan($next, [
@@ -138,13 +157,13 @@ class DataController
         $status = $this->redis->type($this->key);
 //        dd($r->key, $this->redis->type($r->key));
         $type = $status->getPayload();
-        $page = $this->request->getParam('page_list', 1) - 1;
+        $page = $this->request->getAttribute('page_list', 1) - 1;
 
         list($values, $size) = $this->helpers->getParams($type, $this->key, $page);
 
         if (isset($values) && $this->config->get('count_elements_page', false)) {
-            $count = $this->request->getParam('count_elements_page');
-            $page  = $this->request->getParam('page', 1);
+            $count = $this->request->getAttribute('count_elements_page');
+            $page  = $this->request->getAttribute('page', 1);
             $values = array_slice($values, $count * ($page - 1), $count,true);
         }
 
@@ -170,7 +189,7 @@ class DataController
      * @return mixed
      */
     private function getInfo() {
-        if ($this->request->getParam('reset', false) && method_exists($this->redis, 'resetStat')) {
+        if ($this->request->getAttribute('reset', false) && method_exists($this->redis, 'resetStat')) {
             $this->redis->resetStat();
         }
         $info = $this->redis->info();
@@ -184,6 +203,13 @@ class DataController
                 'redis_version' => $info["Server"]['redis_version'],
                 'uptime_in_seconds' => $info["Server"]['uptime_in_seconds'],
                 'used_memory' => $info["Memory"]['used_memory'],
+                'connections' => $info["Stats"]['total_commands_processed'],
+                'commands' => $info["Stats"]['total_commands_processed'],
+                'hits' => $info["Stats"]['keyspace_hits'],
+                'misses' => $info["Stats"]['keyspace_misses'],
+                'clients' => $info["Clients"]['connected_clients'],
+                'user_cpu' => $info["CPU"]['used_cpu_user'],
+                'system_cpu' => $info["CPU"]['used_cpu_sys'],
                 'size' => $this->redis->dbSize(),
                 'rdb_last_save_time' => $info['Persistence']['rdb_last_save_time']
             ],
@@ -195,8 +221,8 @@ class DataController
      * @return mixed
      */
     private function setTTL() {
-        if ($this->request->getAttribute('reset', -1 ) == -1) $this->redis->persist($this->key);
-        else $this->redis->expire($this->key, $this->request->getAttribute('ttl'));
+        if ($this->request->getParam('reset', -1 ) == -1) $this->redis->persist($this->key);
+        else $this->redis->expire($this->key, $this->request->getParam('ttl'));
 
         return $this->response->withJSON([
             'result' => true
@@ -207,15 +233,15 @@ class DataController
      * @return mixed
      */
     private function setName() {
-        if (strlen($this->request->getAttribute('new_name')) > $this->config->get('maxkeylen')) {
+        if (strlen($this->request->getParam('new_name')) > $this->config->get('maxkeylen')) {
             return $this->response->withJSON([
                 'result' => 'ERROR: Your key is to long (max length is '.$this->config->get('maxkeyle').')'
             ], 400, JSON_UNESCAPED_UNICODE);
         }
 
-        $this->redis->rename($this->request->getAttribute('old_name'), $this->request->getAttribute('new_name'));
+        $this->redis->rename($this->request->getParam('old_name'), $this->request->getParam('new_name'));
         return $this->response->withJSON([
-            'result' => $this->request->getAttribute('new_name')
+            'result' => $this->request->getParam('new_name')
         ], 200, JSON_UNESCAPED_UNICODE);
     }
 
@@ -223,24 +249,24 @@ class DataController
      * @return mixed
      */
     private function removeItem() {
-        if ($this->request->getAttribute('type', false) === 'string') {
+        if ($this->request->getParam('type', false) === 'string') {
             // Delete the whole key.
             $this->redis->del($this->key);
-        } else if ($this->request->getAttribute('type', false) === 'tree') {
+        } else if ($this->request->getParam('type', false) === 'tree') {
             $keys = $this->redis->keys($this->key.':*');
             foreach ($keys as $key) $this->redis->del($key);
         } else {
             $status = $this->redis->type($this->key);
             $type = $status->getPayload();
             if ($type === 'string') $this->redis->del($this->key);
-            else if ($type === 'hash') $this->redis->hDel($this->key, $this->request->getAttribute('u_key'));
+            else if ($type === 'hash') $this->redis->hDel($this->key, $this->request->getParam('u_key'));
             else if ($type === 'list') {
                 // Lists don't have simple delete operations.
                 // You can only remove something based on a value so we set the value at the index to some random value we hope doesn't occur elsewhere in the list.
                 $value = substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil(69/strlen($x)) )),1,69);
 
                 // This code assumes $value is not present in the list. To make sure of this we would need to check the whole list and place a Watch on it to make sure the list isn't modified in between.
-                $this->redis->lSet($this->key, $this->request->getAttribute('u_key'), $value);
+                $this->redis->lSet($this->key, $this->request->getParam('u_key'), $value);
                 $this->redis->lRem($this->key, 1, $value);
             }
         }
@@ -274,22 +300,22 @@ class DataController
      * @return mixed
      */
     private function saveItem() {
-        if (strlen($this->request->getAttribute('new_key')) > $this->config->get('maxkeylen')) {
+        if (strlen($this->request->getParam('new_key')) > $this->config->get('maxkeylen')) {
             return $this->response->withJSON([
                 'result' => 'ERROR: Your hash key is to long (max length is '.$this->config->get('maxkeylen').')'
             ],200, JSON_UNESCAPED_UNICODE);
         }
-        $new_key = $this->request->getAttribute('new_key', '');
-        $new_value = $this->request->getAttribute('new_value', '');
-        $old_value = $this->request->getAttribute('old_value', '');
-        $u_key = $this->request->getAttribute('u_key', '');
+        $new_key = $this->request->getParam('new_key', '');
+        $new_value = $this->request->getParam('new_value', '');
+        $old_value = $this->request->getParam('old_value', '');
+        $u_key = $this->request->getParam('u_key', '');
         
         
-        if ($this->request->getAttribute('type', 'string') === 'string') $this->redis->set($new_key, $new_value);
-        else if ($this->request->getAttribute('type')  == 'hash') {
+        if ($this->request->getParam('type', 'string') === 'string') $this->redis->set($new_key, $new_value);
+        else if ($this->request->getParam('type')  == 'hash') {
             if (!$this->redis->hExists($new_key, $u_key)) $this->redis->hDel($new_key, $u_key);
             $this->redis->hSet($new_key, $u_key, $new_value);
-        } else if ($this->request->getAttribute('type') == 'list') {
+        } else if ($this->request->getParam('type') == 'list') {
             $size = $this->redis->lLen($new_key);
             if ($u_key == '' || $u_key == $size || $u_key == -1) {
                 // Push it at the end
@@ -300,13 +326,13 @@ class DataController
             } else {
                 die('ERROR: Out of bounds index');
             }
-        } else if ($this->request->getAttribute('type') == 'set') {
+        } else if ($this->request->getParam('type') == 'set') {
             if ($new_value != $old_value) {
                 // The only way to edit a Set value is to add it and remove the old value.
                 if ($old_value !== '') $this->redis->sRem($new_key, $old_value);
                 $this->redis->sAdd($new_key, $new_value);
             }
-        } else if ($this->request->getAttribute('type') == 'zset') {
+        } else if ($this->request->getParam('type') == 'zset') {
             // The only way to edit a ZSet value is to add it and remove the old value.
             if ($old_value !== '')  $this->redis->zRem($new_key, $old_value);
             $this->redis->zAdd($new_key, [$u_key => $new_value]);
@@ -322,7 +348,7 @@ class DataController
      */
     private function import() {
         // Append some spaces at the end to make sure we always have enough arguments for the last function.
-        $commands = str_getcsv(str_replace(["\r", "\n"], ['', ' '], $this->request->getAttribute('import_text') ).'    ', ' ');
+        $commands = str_getcsv(str_replace(["\r", "\n"], ['', ' '], $this->request->getParam('import_text') ).'    ', ' ');
 
         foreach ($commands as &$command) $command = stripslashes($command);
         unset($command);

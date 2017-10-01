@@ -48,16 +48,6 @@
                   :filter="filter"
                   :key="data.link">
             </tree>
-
-            <!--<ul class="list-group">-->
-                <!--<tree v-for="(model, key) in tree"-->
-                      <!--:name="key"-->
-                      <!--:tree="model"-->
-                      <!--:filter="filter"-->
-                      <!--:key="key">-->
-                <!--</tree>-->
-            <!--</ul>-->
-            <!--<li class='add_tree'><div>+</div></li>-->
         </ul>
         <div style="text-align: center" v-if="!params.show_all_item">
             <div class="btn-group">
@@ -155,10 +145,12 @@
 
     li.tree_item div:hover, li.add_tree div:hover {
         background-color: #021321;
+        color: white;
     }
 
     li.tree_item div.selected, li.add_tree div.selected {
         background-color: #546879;
+        color: white;
     }
 
     .form-control-clear {

@@ -60,7 +60,7 @@
                 return this.$route.query.edit || false
             },
             db() {
-                return this.$route.query.db || false
+                return this.$route.query.db || 0
             },
             title_table() {
                 if(this.type === "hash") return 'Hash key:';

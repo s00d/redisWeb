@@ -25,9 +25,11 @@ $app->group('/api', function () {
     $this->get('/getInfo', [$controller, 'getInfo']);
 
     $this->post('/setTTL', [$controller, 'setTTL']);
+    $this->post('/runAction', [$controller, 'runAction']);
+
     $this->post('/setName', [$controller, 'setName']);
     $this->post('/saveItem', [$controller, 'saveItem']);
-    $this->delete('/removeItem', [$controller, 'import']);
+    $this->delete('/removeItem', [$controller, 'removeItem']);
 
     $this->get('/export', [$controller, 'export']);
     $this->post('/import', [$controller, 'import']);
