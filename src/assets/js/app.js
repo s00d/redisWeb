@@ -1,3 +1,4 @@
+import './animations.css'
 
 require('./bootstrap');
 window.Vue = require('vue');

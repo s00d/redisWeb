@@ -72,7 +72,7 @@
                     console.log('socket disconnect...')
                 },
                 message(val){
-                    console.log('msg...', val)
+//                    console.log('msg...', val)
                     if(val.event === 'queue'  && this.select === 'info') {
                         if(!(val.channel in this.channels)) Vue.set(this.channels, val.channel, [val.message])
                         else this.channels[val.channel].push(val.message);

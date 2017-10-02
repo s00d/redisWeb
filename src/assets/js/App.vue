@@ -1,6 +1,6 @@
 <template>
     <div id="app" class="layout-boxed">
-        <transition mode="out-in">
+        <transition appear :name="transitionName" mode="out-in">
             <keep-alive>
                 <router-view class="view"></router-view>
             </keep-alive>
@@ -15,8 +15,19 @@
         data () {
             return {
                 load: true,
-
+                transitionName: 'slide-up'
             };
+        },
+        watch: {
+            '$route' (to, from) {
+                const toDepth = to.path.split('/').length;
+                const fromDepth = from.path.split('/').length;
+                if (toDepth === fromDepth) {
+                    this.transitionName = 'slide-up'
+                } else {
+                    this.transitionName = toDepth < fromDepth ? 'slide-right' : 'slide-left'
+                }
+            }
         },
         methods: {
             handleResize () {
