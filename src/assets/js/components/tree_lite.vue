@@ -15,7 +15,8 @@
                 :key="key"
                 :name="key"
                 :link="sendLink"
-                :tree="model">
+                :tree="model"
+                @delete="removeByKey">
             </tree-component>
         </ul>
     </li>
@@ -71,11 +72,13 @@
 
                 }
             },
-
+            removeByKey(key) {
+                this.$delete(this.tree, key)
+            },
             remove(type) {
                 this.$axios.delete("/removeItem",{ params: this.$mp_axios({ key: this.sendLink, type: this.isFolder ? 'tree' : 'string'}) })
                     .then(response => {
-                        this.$delete(this.$parent.tree, key)
+                        this.$emit('delete', key)
                     })
                     .catch(e => console.log(e))
             }

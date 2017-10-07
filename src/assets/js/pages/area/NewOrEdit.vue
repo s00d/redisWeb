@@ -86,7 +86,7 @@
         },
         methods: {
             save() {
-//                this.$store.commit('tree/pushNew', this.new_key);
+//                this.$store.commit('tree/rename', {old_link: this.old_key, new_link:this.new_key});
                 this.$axios.post("/saveItem", {
                     new_value: this.new_value,
                     old_value: this.old_value,

@@ -44,13 +44,14 @@ export const mutations = {
             tree = tree.children[keys[i]];
         }
     },
-    pushData(state, data = {link: '', add: false}) {
+    pushData(state, data = {link: '', add: {}}) {
         let keys = data.link.split(":");
         let tree = state.data;
         for(let i = 0; i < keys.length-1; i++) {
             tree = tree.children[keys[i]];
         }
-        console.log(tree);
+        data.add.link = data.link;
+        data.add.name = keys[keys.length - 1];
         Vue.set(tree.children, keys[keys.length - 1], data.add);
     },
     rename(state, links = {old_link: '', new_link: ''}) {
@@ -60,10 +61,24 @@ export const mutations = {
             tree = tree.children[keys[i]];
         }
 
-        this.commit('tree/push', {link: links.new_link, add:JSON.parse(JSON.stringify(tree))});
+        this.commit('tree/pushData', {link: links.new_link, add: JSON.parse(JSON.stringify(tree))});
         this.commit('tree/del', links.old_link);
     },
+    dropItems(state, data = {link: "", fromKey: "", toKey: ""}) {
+        console.log(data.fromKey, data.toKey);
+        let keys = data.link.split(":");
+        let tree = state.data;
+        for(let i = 0; i < keys.length - 1; i++) {
+            tree = tree.children[keys[i]];
+        }
+        let fromData = JSON.parse(JSON.stringify(tree.children[data.fromKey]));
+        let toData = JSON.parse(JSON.stringify(tree.children[data.toKey]));
 
+        Vue.set(tree.children, data.fromKey, toData);
+        Vue.set(tree.children, data.toKey, fromData);
+
+
+    },
 };
 
 export const getters = {

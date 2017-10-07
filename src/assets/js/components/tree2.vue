@@ -1,6 +1,6 @@
 <template>
     <li v-if="show" class="tree_item"  >
-        <div :class="{bold: isFolder, selected: tree.open || selected}" @click="toggle" :id="tree.link" draggable='true' @dragstart='dragStart' @dragover='dragOver' @dragenter='dragEnter' @dragleave='dragLeave' @drop='drop' @dragend='dragEnd'>
+        <div :class="{bold: isFolder, selected: tree.open || selected}" @click="toggle" :id="id" draggable='true' @dragstart='dragStart' @dragover='dragOver' @dragenter='dragEnter' @dragleave='dragLeave' @drop='drop' @dragend='dragEnd'>
             <span >
                 <span v-if="isFolder"> [{{tree.open ? '-' : '+'}}] </span>
                 <i class="glyphicon glyphicon-folder-open" v-if="isFolder"></i>
@@ -83,7 +83,6 @@
             remove(link) {
                 this.$axios.delete("/removeItem",{ params: this.$mp_axios({ key: link, type: this.isFolder ? 'tree' : 'string'}) })
                     .then(response => {
-//                        this.$delete(this.$parent.tree.children, this.id)
                         this.$store.commit('tree/del', this.tree.link)
                     })
                     .catch(e => console.log(e))
@@ -103,26 +102,18 @@
             drag(e) {},
             dragEnter(e) {},
             dragLeave(e) {
-                e.target.style.background = '#ffffff'
+                e.target.style.background = '#2a3f53'
             },
             dragEnd(e) {},
             dragOver(e) {
-                e.target.style.background = '#ffc4b1'
+                e.target.style.background = '#345cff'
                 e.preventDefault()
                 return true
             },
             drop(e) {
-//                 this.toData = this.tree
-                let from = JSON.parse(JSON.stringify(this.$parent.tree.children[e.target.id]));
-                let to = JSON.parse(JSON.stringify(this.$parent.tree.children[toData]));
+                this.$store.commit('tree/dropItems', {link: this.tree.link, fromKey: e.target.id, toKey: toData})
 
-                console.log(e.target.id);
-                console.log(toData);
-
-                this.$set(this.$parent.tree.children, e.target.id, to);
-                this.$set(this.$parent.tree.children, toData, from);
-
-                e.target.style.background = '#ffffff'
+                e.target.style.background = '#101075'
             },
         },
         mounted() {
