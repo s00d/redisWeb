@@ -1,17 +1,24 @@
 <template>
-
     <li v-if="show" class="tree_item">
-        <div :class="{bold: isFolder, selected: tree.open || selected}" @click="toggle" :id="id" draggable='true' @dragstart='dragStart' @dragover='dragOver' @dragenter='dragEnter' @dragleave='dragLeave' @drop='drop' @dragend='dragEnd'>
+        <div :class="{bold: isFolder, selected: tree.open || selected}" @click="toggle" :id="id" draggable='true' @dragstart='dragStart' @dragover='dragOver' @dragenter='dragEnter' @dragleave='dragLeave' @drop='drop($event, id)' @dragend='dragEnd'>
             <span>
                 <span v-if="isFolder"> [{{tree.open ? '-' : '+'}}] </span>
                 <i class="glyphicon glyphicon-folder-open" v-if="isFolder"></i>
-                <span v-text="tree.name"></span>
+                <span v-if="!tree.edit" v-text="tree.name"></span>
+                <input v-else type="text" style="width: 80%" class="black" v-model="link" @keyup.enter="$store.commit('tree/edit', tree.link)">
             </span>
 
             <a class="btn pull-right btn-xs glyphicon glyphicon-remove"
                v-if="tree.name !== 'root'"
                :class="isFolder ? 'remove-folder' : 'remove-item'" @click.stop="remove(tree.link)">
             </a>
+
+            <a class="btn pull-right btn-xs glyphicon glyphicon-pencil"
+               v-if="!isFolder"
+               @click.stop="$store.commit('tree/edit', tree.link)">
+            </a>
+
+
             <span class="label label-default pull-right mr-fix" v-text="length" v-if="isFolder"></span>
             <span class="fa fa-spinner fa-spin pull-right"
                   style="margin-right: 10px;margin-top: 4px;"
@@ -91,6 +98,14 @@
             },
             lastPage() {
                 return Math.ceil(this.length/this.maxInPage)-1;
+            },
+            link: {
+                get() {
+                    return this.tree.link;
+                },
+                set(val) {
+                    return  this.$store.commit('tree/rename', {old_link: this.tree.link, new_link: val});
+                }
             }
         },
         methods: {
@@ -138,8 +153,8 @@
                 e.preventDefault()
                 return true
             },
-            drop(e) {
-                this.$store.commit('tree/dropItems', {link: this.tree.link, fromKey: e.target.id, toKey: toData})
+            drop(e, id) {
+                this.$store.commit('tree/dropItems', {link: this.tree.link, fromKey: id, toKey: toData});
 
                 e.target.style.background = '#101075'
             },

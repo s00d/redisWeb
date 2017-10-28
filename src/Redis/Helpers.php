@@ -43,6 +43,7 @@ class Helpers extends Base
             unset($d);
         }
 //        $result['tree'] = $result;
+        if($link && substr($link, -1) === ':') $link = substr($link, 0, -1);
         return ['name' => $link ? $link :'root', 'children' => $result];
     }
 

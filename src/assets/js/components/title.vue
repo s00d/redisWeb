@@ -45,15 +45,15 @@
             },
             sendRequest() {
                 return  this.$store.commit('tree/rename', {old_link: this.value, new_link: this.value_fuild});
-                this.$axios.post("/setName", this.$mp_axios({key: this.key_item, new_name: this.value_fuild, old_name: this.value}) )
-                    .then(response => {
-                        this.$store.commit('tree/rename', {old_link: this.value, new_link:this.value_fuild});
-                        this.$router.push({
-                            name: 'index',
-                            query: this.$mp({key: response.data.result})
-                        })
-                    })
-                    .catch(e => console.log(e))
+//                this.$axios.post("/setName", this.$mp_axios({key: this.key_item, new_name: this.value_fuild, old_name: this.value}) )
+//                    .then(response => {
+//                        this.$store.commit('tree/rename', {old_link: this.value, new_link:this.value_fuild});
+//                        this.$router.push({
+//                            name: 'index',
+//                            query: this.$mp({key: response.data.result})
+//                        })
+//                    })
+//                    .catch(e => console.log(e))
             }
 
         },
