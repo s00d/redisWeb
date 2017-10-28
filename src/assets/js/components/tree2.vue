@@ -1,26 +1,50 @@
 <template>
-    <li v-if="show" class="tree_item"  >
+
+    <li v-if="show" class="tree_item">
         <div :class="{bold: isFolder, selected: tree.open || selected}" @click="toggle" :id="id" draggable='true' @dragstart='dragStart' @dragover='dragOver' @dragenter='dragEnter' @dragleave='dragLeave' @drop='drop' @dragend='dragEnd'>
-            <span >
+            <span>
                 <span v-if="isFolder"> [{{tree.open ? '-' : '+'}}] </span>
                 <i class="glyphicon glyphicon-folder-open" v-if="isFolder"></i>
                 <span v-text="tree.name"></span>
             </span>
 
-            <a class="btn pull-right btn-xs glyphicon glyphicon-remove" :class="isFolder ? 'remove-folder' : 'remove-item'" @click.stop="remove(tree.link)"></a>
+            <a class="btn pull-right btn-xs glyphicon glyphicon-remove"
+               v-if="tree.name !== 'root'"
+               :class="isFolder ? 'remove-folder' : 'remove-item'" @click.stop="remove(tree.link)">
+            </a>
             <span class="label label-default pull-right mr-fix" v-text="length" v-if="isFolder"></span>
+            <span class="fa fa-spinner fa-spin pull-right"
+                  style="margin-right: 10px;margin-top: 4px;"
+                  v-if="tree.open && tree.children === 'unload'">
+            </span>
         </div>
+
         <ul v-if="isFolder && tree.open" class="tree">
-            <tree-component v-for="(data, key) in tree.children"
+            <tree2-component v-if="!isFolderLoad && index >= (page*maxInPage) && index<(page+1)*maxInPage" v-for="(data, key, index) in tree.children"
                             class="item"
                             :id="key"
-                            :filter="filter"
                             :key="data.link"
                             :tree="data">
-            </tree-component>
+            </tree2-component>
+
+            <li v-if="length > maxInPage">
+                <div style="text-align: center">
+                    <button class="btn btn-default" :disabled="page === 0" @click="page--">First</button>
+                    <span type="button" class="btn btn-default"
+                          v-for="in_page in lastPage"
+                          v-text="in_page"
+                          :disabled="page === in_page-1"
+                          @click="page = in_page-1"
+                    ></span>
+                    <button class="btn btn-default" :disabled="page === lastPage" @click="page++">Next</button>
+                    <input type="number" class="form-control" v-model="maxInPage" style="display: inline-block; width: 50px; padding: 6px 2px">
+                </div>
+            </li>
             <!--<li class='add_tree'><div>+</div></li>-->
         </ul>
     </li>
+
+
 </template>
 
 <script>
@@ -30,19 +54,20 @@
     let toData = '';
 
     export default {
-        name: 'tree-component',
+        name: 'tree2-component',
         props: {
             id: {
                 type: [Number, String]
             },
             tree: {
                 type: [Number, String, Object, Array]
-            },
-            filter: ''
+            }
         },
         data: function () {
             return {
                 show: true,
+                page:0,
+                maxInPage: 100
 
                 // drag
 
@@ -53,13 +78,19 @@
                 save: state => state.settings.data.save
             }),
             isFolder() {
-                return 'children' in this.tree //&& Object.keys(this.tree.children).length;
+                return 'children' in this.tree && this.tree.children !== false;  //&& Object.keys(this.tree.children).length;
+            },
+            isFolderLoad() {
+                return this.isFolder && this.tree.children === 'unload';
             },
             selected() {
                 return this.$route.query.key === this.tree.link
             },
             length() {
-                return 'children' in this.tree ? Object.keys(this.tree.children).length : 0
+                return 'children' in this.tree && this.tree.children !== 'unload' ? Object.keys(this.tree.children).length : 'un'
+            },
+            lastPage() {
+                return Math.ceil(this.length/this.maxInPage)-1;
             }
         },
         methods: {
@@ -87,9 +118,6 @@
                     })
                     .catch(e => console.log(e))
             },
-
-
-
             // drag
             dragStart(e) {
                 // fromData = this.model
@@ -106,7 +134,7 @@
             },
             dragEnd(e) {},
             dragOver(e) {
-                e.target.style.background = '#345cff'
+                e.target.style.background = '#345cff';
                 e.preventDefault()
                 return true
             },

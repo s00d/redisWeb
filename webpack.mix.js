@@ -20,6 +20,8 @@ mix.setPublicPath('public/assets')
     .js('src/assets/js/app.js', 'public/assets/js')
     .sass('src/assets/sass/app.scss', 'public/assets/css')
     .extract(['vue', 'jquery', 'socket.io-client'])
+    .setPublicPath('public/assets')
+    .setResourceRoot('/assets/')
     .autoload({
         jquery: ['$', 'jquery', 'window.jquery'],
         'socket.io-client': ['io']

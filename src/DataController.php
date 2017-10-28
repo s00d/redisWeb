@@ -83,21 +83,25 @@ class DataController
      * @return mixed
      */
     private function getList() {
-        $next = $this->request->getAttribute('next', 0);
-        $all = $this->request->getAttribute('all', $this->config->get('show_all_item', false));
-        $count = $this->request->getAttribute('count', 10000);
-        $filter =  $this->request->getAttribute('filter', $this->request->getAttribute('filter', $this->config->get(('filter'))));
+        $next = $this->request->getParam('next', 0);
+        $paginate = $this->request->getParam('paginate', $this->config->get('show_all_item', false));
+        $paginate = (boolean)json_decode(strtolower($paginate));
+        $count = $this->request->getParam('count', 10000);
+        $filter = $this->request->getParam('filter', $this->config->get(('filter')));
+        $link = $this->request->getParam('link', '');
+        if($filter !== '*') $filter = "*$filter*";
         $redis_data = [];
         while (true) {
             list($next, $keys) = $this->redis->scan($next, [
-                'MATCH' => $filter,
+                'MATCH' => (!$paginate && $link !== '') ? $link."$filter" : $filter,
                 'COUNT' => $count
             ]);
             $redis_data = array_merge($keys, $redis_data);
-            if ($next == 0 || !$all) break;
-        }
+            if ($paginate || $next == 0) break;
+        };
 
-        $result = $this->helpers->generateRedisData($redis_data);
+        $result = $this->helpers->generateRedisData($redis_data, $link, $paginate);
+//        dd($result);
         sort($redis_data);
 
         $servers = $this->config->get('redis');
@@ -109,7 +113,7 @@ class DataController
                 'filter' => $filter,
                 'count' => $count,
                 'servers' => $servers,
-                'show_all_item' => $all
+                'paginate' => $paginate
             ],
             'tree'=> $result,
         ], 200, JSON_UNESCAPED_UNICODE);
@@ -157,13 +161,13 @@ class DataController
         $status = $this->redis->type($this->key);
 //        dd($r->key, $this->redis->type($r->key));
         $type = $status->getPayload();
-        $page = $this->request->getAttribute('page_list', 1) - 1;
+        $page = $this->request->getParam('page_list', 1) - 1;
 
         list($values, $size) = $this->helpers->getParams($type, $this->key, $page);
 
         if (isset($values) && $this->config->get('count_elements_page', false)) {
-            $count = $this->request->getAttribute('count_elements_page');
-            $page  = $this->request->getAttribute('page', 1);
+            $count = $this->request->getParam('count_elements_page');
+            $page  = $this->request->getParam('page', 1);
             $values = array_slice($values, $count * ($page - 1), $count,true);
         }
 
@@ -189,7 +193,7 @@ class DataController
      * @return mixed
      */
     private function getInfo() {
-        if ($this->request->getAttribute('reset', false) && method_exists($this->redis, 'resetStat')) {
+        if ($this->request->getParam('reset', false) && method_exists($this->redis, 'resetStat')) {
             $this->redis->resetStat();
         }
         $info = $this->redis->info();
@@ -282,7 +286,7 @@ class DataController
     private function export() {
         $keys = $this->redis->keys($this->key);
 
-        $type = $this->request->getAttribute('type', 'redis');
+        $type = $this->request->getParam('type', 'redis');
         $vals = $type === 'json' ? [] : '';
         foreach ($keys as $key) {
             if($type === 'json') $vals[$key] = $this->export->export_json($key);

@@ -32,30 +32,20 @@
                 </span>
             </div>
 
-
-            <!--<div class="input-group input-group-sm">-->
-                <!--<input type="text" class="form-control" placeholder="Add another key">-->
-                <!--<span class="input-group-btn">-->
-                    <!--<button class="btn btn-default" type="button">+</button>-->
-                <!--</span>-->
-            <!--</div>-->
             <router-link :to="{ name: 'index', query: $mp({edit: true}) }" class="btn btn-link black">+ Add another key</router-link>
         </div>
         <ul class="list-group tree no-padding">
-            <tree v-for="(data, key) in treeFiltred.children"
-                  :tree="data"
-                  :id="key"
-                  :filter="filter"
-                  :key="data.link">
-            </tree>
+            <tree :tree="treeFiltred"></tree>
         </ul>
-        <div style="text-align: center" v-if="!params.show_all_item">
-            <div class="btn-group">
-                <router-link :to="{ name: 'index', query: $mp({page: 0}) }" class="btn btn-default">First</router-link>
-                <button type="button" class="btn btn-default">|</button>
-                <router-link :to="{ name: 'index', query: $mp({page: params.next}) }" class="btn btn-default">Next</router-link>
-            </div>
-        </div>
+
+
+        <!--<div style="text-align: center" v-if="!params.show_all_item">-->
+            <!--<div class="btn-group">-->
+                <!--<router-link :to="{ name: 'index', query: $mp({page: 0}) }" class="btn btn-default">First</router-link>-->
+                <!--<button type="button" class="btn btn-default">|</button>-->
+                <!--<router-link :to="{ name: 'index', query: $mp({page: params.next}) }" class="btn btn-default">Next</router-link>-->
+            <!--</div>-->
+        <!--</div>-->
     </div>
 </template>
 
@@ -90,7 +80,7 @@
                 this.$router.push({name: 'index', query: this.$mp({server: val})});
             },
             filter(val) {
-                this.$store.commit('tree/setFilter', val)
+//                this.$store.commit('tree/setFilter', val)
             }
         },
         computed: {

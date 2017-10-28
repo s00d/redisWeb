@@ -41,14 +41,14 @@
             db() {
                 return this.$route.query.db || 0;
             },
-            ...mapState({
-                filter: state => state.tree.filter
-            }),
             server() {
                 return this.$route.query.server || 'default';
             },
             added_list() {
                 return this.$route.query.added_list || false;
+            },
+            filter() {
+                return this.$route.query.filter || '*';
             }
         },
         watch: {
@@ -60,16 +60,22 @@
             },
             server(val) {
                 this.getData()
+            },
+            filter(val) {
+                this.getData()
             }
         },
         methods: {
             getData(page = 0) {
-                this.$axios.get("/getList", { params: this.$mp_axios({ page: this.page, all: this.all}) })
-                    .then(response => {
-                        this.params = response.data.params;
-                        this.$store.commit('tree/set', response.data.tree)
-                    })
-                    .catch(e => console.log(e))
+                console.log(this.filter);
+                this.$store.commit('tree/setFilter', this.filter)
+                this.$store.dispatch('tree/getTree');
+//                this.$axios.get("/getList", { params: this.$mp_axios({ page: this.page, all: this.all}) })
+//                    .then(response => {
+//                        this.params = response.data.params;
+//                        this.$store.commit('tree/set', response.data.tree)
+//                    })
+//                    .catch(e => console.log(e))
             }
         },
         mounted() {

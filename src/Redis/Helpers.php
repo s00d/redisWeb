@@ -5,33 +5,45 @@ namespace App\Redis;
 class Helpers extends Base
 {
 
-    public function generateRedisData($data) {
+    public function generateRedisData($data, $link, $paginate) {
         $result = []; // Array to hold our top namespaces.
         // Build an array of nested arrays containing all our namespaces and containing keys.
+
+        if(!$paginate) $data = preg_replace("/^{$link}/i", "", $data);
 
         foreach ($data as $inc => $key) {
             // Ignore keys that are to long (Redis supports keys that can be way to long to put in an url).
             if (strlen($key) > $this->config->get('maxkeylen')) continue;
 
             //$type = $this->redis->type($key);
-            $key = explode($this->config->get('seperator'), $key);
+            if(!$paginate) {
+                $key = explode($this->config->get('seperator'), $key);
+                if (isset($result[$key[0]])) continue;
+                $item =  ['name' => $key[0], 'link' => $link.$key[0]];
+                $item['children'] = (count($key) > 1) ? 'unload': false;
+                $result[$key[0]] = $item;
+                continue;
+            }
 
-            // $d will be a reference to the current namespace.
+
+//            // $d will be a reference to the current namespace.
             $d = &$result;
             $link = '';
             // We loop though all the namespaces for this key creating the array for each.
             // Each time updating $d to be a reference to the last namespace so we can create the next one in it.
             for ($i = 0; $i < count($key); $i++) {
+                if (isset($d[$key[$i]])) continue;
                 $link .= (($link === '') ? '' :  ':') . $key[$i];
                 if (!isset($d[$key[$i]])) $d[$key[$i]] = ['name' => $key[$i], 'link' => $link];
                 if ($i < count($key)-1) $d = &$d[$key[$i]]['children'];
+                break;
             }
-
-            // Unset $d so we don't accidentally overwrite it somewhere else.
+//
+//            // Unset $d so we don't accidentally overwrite it somewhere else.
             unset($d);
         }
 //        $result['tree'] = $result;
-        return ['name' => 'root', 'children' => $result];
+        return ['name' => $link ? $link :'root', 'children' => $result];
     }
 
 //    public function encodeOrDecode($action, $key, $data) {

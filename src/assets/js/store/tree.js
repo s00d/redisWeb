@@ -2,7 +2,7 @@ import Vue from 'vue'
 import { omitBy } from 'lodash';
 
 export const state = {
-    data: {},
+    data: {children: 'unload', open: true},
     filter: '*'
 };
 
@@ -31,6 +31,7 @@ export const mutations = {
             tree = tree.children[keys[i]];
         }
         Vue.set(tree, 'open', 'open' in tree ? !tree.open : true);
+        if(tree.children === 'unload') this.dispatch('tree/getTree', link);
 
     },
     pushNew(state, link) {
@@ -47,12 +48,26 @@ export const mutations = {
     pushData(state, data = {link: '', add: {}}) {
         let keys = data.link.split(":");
         let tree = state.data;
-        for(let i = 0; i < keys.length-1; i++) {
+        if(data.link !== '') for(let i = 0; i < keys.length; i++) {
             tree = tree.children[keys[i]];
         }
-        data.add.link = data.link;
-        data.add.name = keys[keys.length - 1];
-        Vue.set(tree.children, keys[keys.length - 1], data.add);
+        Vue.set(tree, 'children', {});
+        Vue.set(tree, 'link', data.link);
+        Vue.set(tree, 'name', data.add.name);
+        Vue.set(tree, 'open', true);
+        Vue.set(tree, 'children', data.add.children);
+    },
+    pushItem(state, data = {link: '', item: {}}) {
+        let keys = data.link.split(":");
+        let tree = state.data;
+        if(data.link !== '') for(let i = 0; i < keys.length; i++) {
+            tree = tree.children[keys[i]];
+        }
+        if(tree.children === 'unload') {
+            Vue.set(tree, 'children', {});
+        }
+        Vue.set(tree.children, data.item.name, data.item);
+        // tree.children.push(data.item);
     },
     rename(state, links = {old_link: '', new_link: ''}) {
         let keys = links.old_link.split(":");
@@ -83,16 +98,26 @@ export const mutations = {
 
 export const getters = {
     getFiltred(state) {
-        let filter = state.filter.replace('*','').toLowerCase();
-        if (filter === '') return state.data;
-        return {children: omitBy(state.data.children, (val, key) => val.link.toLowerCase().indexOf(filter) === -1)};
+        return state.data
     }
 };
 
 export const actions = {
-    getTree({ commit }) {
-        Vue.axios.get('/api').then(response => {
-            commit('tree/set', response.data.tree);
+    getTree({ commit }, link = false) {
+        let req = { paginate: false };
+        if(link) req['link'] = link+':';
+        req['filter'] = state.filter;
+        Vue.axios.get('/getList', { params: Vue.mp_axios(req)}).then(response => {
+            commit('pushData', {'link': ('link' in req) ? link : '', 'add': response.data.tree});
+            // let timeout = 0;
+            // for(let i in response.data.tree.children) {
+            //     commit('pushItem', {link: link, item: response.data.tree.children[i]})
+            //     setTimeout(() => {
+            //         commit('pushItem', {link: link, item: response.data.tree.children[i]})
+            //     }, timeout);
+            //     timeout += 20;
+            // }
+
         });
         // this.$store.dispatch('tree/getTree');
     }

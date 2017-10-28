@@ -37,7 +37,7 @@ Vue.prototype.$mp = function (params = {}) {
     return q
 };
 
-Vue.prototype.$mp_axios = function (params = {}) {
+Vue.mp_axios = Vue.prototype.$mp_axios = function (params = {}) {
     let q = JSON.parse(JSON.stringify(query));
     if('db' in q) params['db'] = q['db'];
     if('server' in q) params['server'] = q['server'];
