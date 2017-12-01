@@ -253,26 +253,24 @@ class DataController
      * @return mixed
      */
     private function removeItem() {
-        if ($this->request->getParam('type', false) === 'string') {
+        $type = !$this->request->getParam('type', false) ? $this->redis->type($this->key)->getPayload() : $this->request->getParam('type');
+
+        if ($type === 'string') {
             // Delete the whole key.
             $this->redis->del($this->key);
-        } else if ($this->request->getParam('type', false) === 'tree') {
+        } else if ($type === 'tree') {
             $keys = $this->redis->keys($this->key.':*');
             foreach ($keys as $key) $this->redis->del($key);
-        } else {
-            $status = $this->redis->type($this->key);
-            $type = $status->getPayload();
-            if ($type === 'string') $this->redis->del($this->key);
-            else if ($type === 'hash') $this->redis->hDel($this->key, $this->request->getParam('u_key'));
-            else if ($type === 'list') {
-                // Lists don't have simple delete operations.
-                // You can only remove something based on a value so we set the value at the index to some random value we hope doesn't occur elsewhere in the list.
-                $value = substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil(69/strlen($x)) )),1,69);
+        } else if ($type === 'hash') {
+            $this->redis->hDel($this->key, $this->request->getParam('u_key'));
+        } else if ($type === 'list') {
+            // Lists don't have simple delete operations.
+            // You can only remove something based on a value so we set the value at the index to some random value we hope doesn't occur elsewhere in the list.
+            $value = substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil(69/strlen($x)) )),1,69);
 
-                // This code assumes $value is not present in the list. To make sure of this we would need to check the whole list and place a Watch on it to make sure the list isn't modified in between.
-                $this->redis->lSet($this->key, $this->request->getParam('u_key'), $value);
-                $this->redis->lRem($this->key, 1, $value);
-            }
+            // This code assumes $value is not present in the list. To make sure of this we would need to check the whole list and place a Watch on it to make sure the list isn't modified in between.
+            $this->redis->lSet($this->key, $this->request->getParam('u_key'), $value);
+            $this->redis->lRem($this->key, 1, $value);
         }
 
         return $this->response->withJSON([

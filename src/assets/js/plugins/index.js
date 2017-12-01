@@ -3,7 +3,6 @@ import Vue from 'vue'
 let files;
 let filenames = [];
 let plugins = {};
-let time = Math.floor(Date.now() / 1000);
 
 try {
     files = require.context('~plugins', false, /^\.\/(?!index).*\.js$/);
@@ -14,7 +13,7 @@ try {
 
 function getModule (filename) {
     if (filename === './index.js') return false;
-    let file = files(filename)
+    let file = files(filename);
     return file.install ? file.install : false
 }
 
@@ -22,7 +21,7 @@ let index = 0;
 for (let filename of filenames) {
     const plugin = {
         name: filename.replace(/^\.\//, '').replace(/\.js$/, ''),
-        time_init: time,
+        time_init: Math.floor(Date.now() / 1000),
         index: index++,
         install: getModule(filename)
     };
